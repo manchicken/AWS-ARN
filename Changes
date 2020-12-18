@@ -1,5 +1,8 @@
 Revision history for AWS::ARN
 
+0.006 2020-12-18
+          - Add github links for metacpan
+
 0.005 2020-12-01
           - Fix where condition for AWS ARN regex
 
