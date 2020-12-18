@@ -1,5 +1,8 @@
 Revision history for AWS::ARN
 
+0.007 2020-12-18
+          - Correct AWS links
+
 0.006 2020-12-18
           - Add github links for metacpan
 
