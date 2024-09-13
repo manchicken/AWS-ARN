@@ -1,0 +1,54 @@
+{
+  "abstract": " module to parse and generate ARNs",
+  "author": ["James Wright <jwright@cpan.org>"],
+  "dynamic_config": 0,
+  "generated_by": "App::ModuleBuildTiny version 0.028",
+  "license": ["perl_5"],
+  "meta-spec": {
+    "url": "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+    "version": 2
+  },
+  "name": "AWS-ARN",
+  "prereqs": {
+    "configure": {
+      "requires": {
+        "Module::Build::Tiny": "0.034",
+        "perl": "5.006"
+      }
+    },
+    "develop": {
+      "requires": {
+        "App::ModuleBuildTiny": "0.028"
+      }
+    },
+    "runtime": {
+      "requires": {
+        "Moo": "2.0",
+        "Try::Tiny": "0",
+        "Type::Utils": "0",
+        "Types::Standard": "0"
+      }
+    }
+  },
+  "provides": {
+    "AWS::ARN": {
+      "file": "lib/AWS/ARN.pm",
+      "version": "0.008"
+    }
+  },
+  "release_status": "stable",
+  "resources": {
+    "bugtracker": {
+      "web": "https://github.com/tehmoth/AWS-ARN/issues"
+    },
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/tehmoth/AWS-ARN.git",
+      "web": "https://github.com/tehmoth/AWS-ARN"
+    },
+    "x_IRC": "irc://irc.styxnet.tech/#perl"
+  },
+  "version": "0.007",
+  "x_serialization_backend": "JSON::PP version 4.02",
+  "x_spdx_expression": "Artistic-1.0-Perl OR GPL-1.0-or-later"
+}
