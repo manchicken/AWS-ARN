@@ -1,5 +1,9 @@
 Revision history for AWS::ARN
 
+0.008 2024-09-13
+          - Corrected resource IDs to be compatible with CostExplorer APIs
+          - Added some tests for loading the module, and for resource IDs
+
 0.007 2020-12-18
           - Correct AWS links
 

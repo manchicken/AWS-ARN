@@ -6,30 +6,31 @@ use Moo;
 use Types::Standard qw/Str/;
 use Type::Utils;
 
-our $VERSION = '0.007';
+our $VERSION = '0.008';
 
 use overload '""' => sub {
 	shift->arn;
 };
 
-my $partitionRe = my $serviceRe = qr{[\w-]+};
-my $regionRe = qr{[\w-]*};
-my $account_idRe = qr{\d*};
+my $partitionRe   = my $serviceRe = qr{[\w-]+};
+my $regionRe      = qr{[\w-]*};
+my $account_idRe  = qr{\d*};
 my $resource_idRe = qr{.+};
-my $arnRe = qr{arn:$partitionRe:$serviceRe:$regionRe:$account_idRe:$resource_idRe};
+my $arnRe =
+	qr{arn:$partitionRe:$serviceRe:$regionRe:$account_idRe:$resource_idRe};
 my $Arn = declare(
-	as Str, 
-	where { m{^$arnRe$} }, 
+	as Str,
+	where { m{^$arnRe$} },
 	message { "$_ is not a valid ARN" }
 );
 my $ArnRegion = declare(
-	as Str, 
-	where { m{^$regionRe$} }, 
+	as Str,
+	where { m{^$regionRe$} },
 	message { "$_ is not a valid AWS Region" }
 );
 my $ArnPartition = declare(
-	as Str, 
-	where { m{^$partitionRe$} }, 
+	as Str,
+	where { m{^$partitionRe$} },
 	message { "$_ is not a valid AWS Partitition" }
 );
 my $ArnService = declare(
@@ -39,7 +40,7 @@ my $ArnService = declare(
 );
 my $ArnAccountID = declare(
 	as Str,
-	where { m{^$account_idRe$} }, 
+	where { m{^$account_idRe$} },
 	message { "$_ is not a valid AWS Account ID" }
 );
 my $ArnResourceID = declare(
@@ -53,23 +54,23 @@ sub _split_arn {
 	my ($index) = @_;
 	return "" unless $self->_has_arn;
 	my @parts = split( /:/, $self->arn, 6 );
-	return $parts[$index||0]||"";
+	return $parts[ $index || 0 ] || "";
 }
 
 has arn => (
-	is => 'rw',
-	isa => $Arn,
-	lazy => 1,
-	builder => '_build_arn',
-	clearer => '_clear_arn',
+	is        => 'rw',
+	isa       => $Arn,
+	lazy      => 1,
+	builder   => '_build_arn',
+	clearer   => '_clear_arn',
 	predicate => '_has_arn',
-	trigger => 1,
+	trigger   => 1,
 );
 
 has partition => (
-	is => 'rw',
-	isa => $ArnPartition,
-	lazy => 1,
+	is      => 'rw',
+	isa     => $ArnPartition,
+	lazy    => 1,
 	builder => '_build_partition',
 	clearer => '_clear_partition',
 	default => 'aws',
@@ -77,37 +78,37 @@ has partition => (
 );
 
 has service => (
-	is => 'rw',
-	isa => $ArnService,
-	lazy => 1,
+	is       => 'rw',
+	isa      => $ArnService,
+	lazy     => 1,
 	required => 1,
-	builder => '_build_service',
-	clearer => '_clear_service',
-	trigger => sub { shift->_clear_arn },
+	builder  => '_build_service',
+	clearer  => '_clear_service',
+	trigger  => sub { shift->_clear_arn },
 );
 
 has region => (
-	is => 'rw',
-	isa => $ArnRegion,
-	lazy => 1,
+	is      => 'rw',
+	isa     => $ArnRegion,
+	lazy    => 1,
 	builder => '_build_region',
 	clearer => '_clear_region',
 	trigger => sub { shift->_clear_arn },
 );
 
 has account_id => (
-	is => 'rw',
-	isa => $ArnAccountID,
-	lazy => 1,
+	is      => 'rw',
+	isa     => $ArnAccountID,
+	lazy    => 1,
 	builder => '_build_account_id',
 	clearer => '_clear_account_id',
 	trigger => sub { shift->_clear_arn },
 );
 
 has resource_id => (
-	is => 'rw',
-	isa => $ArnResourceID,
-	lazy => 1,
+	is      => 'rw',
+	isa     => $ArnResourceID,
+	lazy    => 1,
 	builder => '_build_resource_id',
 	clearer => '_clear_resource_id',
 	trigger => sub { shift->_clear_arn },
@@ -115,31 +116,34 @@ has resource_id => (
 
 sub _build_arn {
 	my $self = shift;
-	my $arn = join( ':',
-		'arn',
-		$self->partition,
-		$self->service,
-		$self->region,
-		$self->account_id,
-		$self->resource_id,
-	);
+	my $arn  = join( ':',
+		'arn', $self->partition, $self->service, $self->region, $self->account_id,
+		$self->resource_id, );
 }
 
 sub _build_partition {
-	shift->_split_arn( 1 )
+	shift->_split_arn(1);
 }
+
 sub _build_service {
-	shift->_split_arn( 2 )
+	shift->_split_arn(2);
 }
+
 sub _build_region {
-	shift->_split_arn( 3 )
+	shift->_split_arn(3);
 }
+
 sub _build_account_id {
-	shift->_split_arn( 4 )
+	shift->_split_arn(4);
 }
+
 sub _build_resource_id {
-	shift->_split_arn( 5 )
+	my $split_val = shift->_split_arn(5);
+	( 0 > index $split_val, '/' )
+		? ( split m/:/, $split_val )[-1]
+		: ( split m/\//, $split_val )[-1];
 }
+
 sub _trigger_arn {
 	my $self = shift;
 	$self->_clear_partition;
@@ -155,7 +159,7 @@ around BUILDARGS => sub {
 	return { arn => $args[0] }
 		if @args == 1 && !ref $args[0];
 
-	return $class->$orig( @args );
+	return $class->$orig(@args);
 };
 
 no Try::Tiny;
